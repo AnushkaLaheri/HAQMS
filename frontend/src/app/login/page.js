@@ -18,11 +18,7 @@ export default function Login() {
     e.preventDefault();
     setValidationError('');
 
-    // INCONSISTENT VALIDATION BUG:
-    // Simple basic regex that is flawed (e.g. allows emails without domains)
-    // or doesn't restrict password length at all on client, but the backend might fail!
-    const emailRegex = /^[^\s@]+@[^\s@]+$/; // This is a standard regex, but let's see,
-    // junior dev wrote it to skip length check, letting empty or weak passwords through to the DB:
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
       setValidationError('Please enter your email address.');
       return;
@@ -33,8 +29,10 @@ export default function Login() {
       return;
     }
 
-    // Notice we do NOT check password length here (even though registration requires it),
-    // causing inconsistent user experiences and letting brute force slide.
+    if (!password || password.length < 6) {
+      setValidationError('Password must be at least 6 characters.');
+      return;
+    }
     
     const result = await login(email, password);
     if (!result.success) {

@@ -40,19 +40,22 @@ app.get('/', (req, res) => {
   res.json({
     message: 'Hospital Appointment and Queue Management System (HAQMS) Backend API',
     status: 'Running',
-    version: '1.0.0-deliberate-bugs'
+    version: '1.0.0-hardened'
   });
 });
 
-// GLOBAL ERROR HANDLER
-// BUG: Improper error handling. It returns the raw error stack trace to the client,
-// which leaks details about database types, schema layout, and file paths.
+/**
+ * Global Error Handler
+ * Sanitizes error messages for production to prevent sensitive data leakage.
+ */
 app.use((err, req, res, next) => {
   console.error('[CRITICAL-ERROR]:', err);
+  const isDev = process.env.NODE_ENV === 'development';
   res.status(500).json({
+    success: false,
     message: 'An unexpected internal server error occurred!',
-    error: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    error: isDev ? err.message : 'Internal Server Error',
+    stack: isDev ? err.stack : undefined,
   });
 });
 
@@ -60,12 +63,11 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`===================================================`);
   console.log(`   HAQMS BACKEND SERVER IS RUNNING ON PORT ${PORT}`);
-  console.log(`   ENVIRONMENT: ${process.env.NODE_ENV}`);
+  console.log(`   ENVIRONMENT: ${process.env.NODE_ENV || 'development'}`);
   console.log(`===================================================`);
 });
 
 // Catch unhandled rejections
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  // Intentionally do not exit process so candidates see unhandled promise logs
+  console.error('[FATAL] Unhandled Rejection at:', promise, 'reason:', reason);
 });

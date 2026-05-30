@@ -12,13 +12,11 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const router = useRouter();
 
-  // HARDCODED API VALUE: Intentionally hardcoding the backend base URL on the frontend!
-  // This violates production standards and prevents simple domain config, but serves as
-  // a perfect exercise for internship candidates to move to environment variables.
-  const API_BASE_URL = 'http://localhost:5000/api';
+  // Configuration: Prefer environment variable for production flexibility.
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
-    // Check for stored token and user on initialization
+    // Initialize auth state from LocalStorage on mount
     const storedToken = localStorage.getItem('haqms_token');
     const storedUser = localStorage.getItem('haqms_user');
 
@@ -27,36 +25,34 @@ export const AuthProvider = ({ children }) => {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
       } catch (e) {
-        console.error('Failed to parse user details from localStorage', e);
+        console.error('[AUTH] Failed to parse user details:', e);
         logout();
       }
     }
     setLoading(false);
   }, []);
 
+  /**
+   * Login user and persist session.
+   */
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Authentication failed');
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Authentication failed');
       }
 
-      // Inconsistent API returns nested success format for login
-      const receivedToken = data.data.token;
-      const receivedUser = data.data.user;
+      const { token: receivedToken, user: receivedUser } = result.data;
 
-      // SECURITY ISSUE: Storing sensitive auth credentials directly in LocalStorage!
       localStorage.setItem('haqms_token', receivedToken);
       localStorage.setItem('haqms_user', JSON.stringify(receivedUser));
 
@@ -66,7 +62,7 @@ export const AuthProvider = ({ children }) => {
       router.push('/dashboard');
       return { success: true };
     } catch (err) {
-      console.error('[AUTH-ERROR] Login request failed:', err);
+      console.error('[AUTH] Login error:', err);
       setError(err.message);
       return { success: false, error: err.message };
     } finally {
@@ -74,29 +70,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Register a new user account.
+   */
   const register = async (name, email, password, role = 'RECEPTIONIST') => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role }),
       });
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || 'Registration failed');
       }
 
-      // If registration succeeds, log them in automatically or redirect to login.
-      // Notice inconsistency: signup API returns flat user structure inside "user"
-      // we can trigger login for them.
+      // Automatically login after successful registration
       return login(email, password);
     } catch (err) {
+      console.error('[AUTH] Registration error:', err);
       setError(err.message);
       return { success: false, error: err.message };
     } finally {

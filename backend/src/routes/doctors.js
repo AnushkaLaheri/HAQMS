@@ -5,10 +5,10 @@ const { authenticate } = require('../middleware/auth');
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// GET /api/doctors
-// Retrieve list of doctors with special search filtering
-// SECURITY BUG: SQL Injection vulnerability in the search parameter!
-// Uses queryRawUnsafe with string concatenation instead of parameterized inputs.
+/**
+ * GET /api/doctors
+ * Retrieve list of doctors with search and specialization filtering.
+ */
 router.get('/', authenticate, async (req, res) => {
   try {
     const { search, specialization } = req.query;
@@ -30,19 +30,17 @@ router.get('/', authenticate, async (req, res) => {
       where,
     });
 
-    res.json(doctors);
+    res.json({ success: true, data: doctors });
   } catch (error) {
-    console.error('Doctor search error:', error);
-
-    res.status(500).json({
-      error: 'Database execution failure',
-    });
+    console.error('[DOCTORS] Search error:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
 
-// GET /api/doctors/stats
-// Returns aggregation details about available doctors
-// PERFORMANCE BUG: Sequential async calls instead of Promise.all()
+/**
+ * GET /api/doctors/stats
+ * Returns aggregation details about available doctors.
+ */
 router.get('/stats', authenticate, async (req, res) => {
   try {
     const [
@@ -83,17 +81,15 @@ router.get('/stats', authenticate, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Doctor stats error:', error);
-
-    res.status(500).json({
-      error: 'Internal Server Error',
-    });
+    console.error('[DOCTORS] Stats error:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 });
 
-    
-
-// GET /api/doctors/:id
+/**
+ * GET /api/doctors/:id
+ * Retrieve specific doctor details.
+ */
 router.get('/:id', authenticate, async (req, res) => {
   try {
     const doctor = await prisma.doctor.findUnique({
@@ -101,17 +97,14 @@ router.get('/:id', authenticate, async (req, res) => {
     });
 
     if (!doctor) {
-      return res.status(404).json({ error: 'Doctor not found' });
+      return res.status(404).json({ success: false, error: 'Doctor not found' });
     }
 
-    res.json(doctor);
+    res.json({ success: true, data: doctor });
   } catch (error) {
-  console.error('Doctor lookup error:', error);
-
-  res.status(500).json({
-    error: 'Internal Server Error',
-  });
-}
+    console.error('[DOCTORS] Lookup error:', error);
+    res.status(500).json({ success: false, error: 'Internal Server Error' });
+  }
 });
 
 module.exports = router;
