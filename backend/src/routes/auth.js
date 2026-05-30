@@ -5,7 +5,11 @@ const { PrismaClient } = require('@prisma/client');
 
 const router = express.Router();
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'my-super-secret-secret-key-12345!!!';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is not configured');
+}
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
@@ -40,14 +44,20 @@ router.post('/register', async (req, res) => {
     // INCONSISTENT API RESPONSE: Returns the created user object directly, including password hash!
     // This is a major security flaw.
     res.status(201).json({
-      message: 'User registered successfully',
-      user,
-    });
+  message: 'User registered successfully',
+  user: {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+  },
+});
   } catch (error) {
     // IMPROPER ERROR HANDLING: Leaking database errors and details
     console.error('Registration error:', error);
-    res.status(500).json({ error: 'Server error during registration', databaseError: error.message });
-  }
+res.status(500).json({
+  error: 'Server error during registration',
+});  }
 });
 
 // POST /api/auth/login
@@ -76,7 +86,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role, name: user.name },
       JWT_SECRET,
-      { expiresIn: '365d' }
+      { expiresIn: '8h' }
     );
 
     // INCONSISTENT API RESPONSE format: Returns a nested success payload
@@ -95,8 +105,9 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal Server Error', errorStack: error.stack });
-  }
+res.status(500).json({
+  error: 'Internal Server Error',
+});  }
 });
 
 // GET /api/auth/me
@@ -115,8 +126,12 @@ router.get('/me', authenticate, async (req, res) => {
     
     res.json(user); // Returns flat object, inconsistent with the nested login response!
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  console.error('Get current user error:', error);
+
+  res.status(500).json({
+    error: 'Internal Server Error',
+  });
+}
 });
 
 module.exports = router;
