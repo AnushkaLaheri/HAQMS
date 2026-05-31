@@ -840,11 +840,11 @@ export default function Dashboard() {
 
               <div className="space-y-6">
                 <div className="p-4 rounded-xl border border-teal-500/25 bg-teal-500/10 text-slate-700 dark:text-slate-300 text-xs leading-5">
-                  <strong>Token Generation Engine Note:</strong> Direct arrivals
+                  <strong>Token Generation Engine:</strong> Direct arrivals
                   bypass appointments. The token engine automatically fetches
                   the current days maximum token size and increments.
-                  <span className="block mt-1 font-bold text-rose-500 uppercase tracking-wide">
-                    Warning: Vulnerable to check-in race conditions!
+                  <span className="block mt-1 font-bold text-teal-600 uppercase tracking-wide">
+                    Concurrency protection enabled
                   </span>
                 </div>
 
@@ -1030,10 +1030,7 @@ export default function Dashboard() {
                     Clinical Background Information
                   </h4>
 
-                  {/* FRONTEND CRASH BUG:
-                      Assuming medicalHistory is always populated. Accesses a method on a nullable property
-                      without optional chaining! If medicalHistory is null (which is the case for Batman, Clark Kent, etc.),
-                      this code throws: "Cannot read properties of null (reading 'toUpperCase')" and crashes the app! */}
+                  {/* Patient clinical history rendering */}
                   <p className="text-slate-700 dark:text-slate-300 leading-5 text-sm font-semibold">
                     {selectedPatientHistory?.medicalHistory ??
                       "No medical history available"}
@@ -1046,7 +1043,7 @@ export default function Dashboard() {
                     href={`/patients/${selectedPatientHistory.id}/history-records`}
                     className="text-teal-600 font-extrabold hover:underline flex items-center gap-1"
                   >
-                    View Diagnostic Reports Details (Legacy App)
+                    View Diagnostic Reports Details
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>
@@ -1162,8 +1159,8 @@ export default function Dashboard() {
                   className="glow-btn px-4 py-2 bg-teal-600 text-white font-extrabold text-xs rounded-lg shadow hover:bg-teal-700 disabled:opacity-50 transition-colors"
                 >
                   {adminReportLoading
-                    ? "Aggregating..."
-                    : "Load Doctor System Audit Report"}
+                    ? "Generating..."
+                    : "Load Doctor Operations Report"}
                 </button>
               </div>
 
@@ -1174,29 +1171,25 @@ export default function Dashboard() {
                     <div></div>
                   </div>
                   <p className="mt-4 text-xs font-semibold text-slate-400 animate-pulse">
-                    Executing sequential nested loop aggregates. Event loop is
-                    locked...
+                    Generating optimized operations report...
                   </p>
                 </div>
               ) : !adminReportData ? (
                 <div className="p-8 text-center bg-slate-100 dark:bg-slate-800/40 rounded-xl text-slate-400 text-xs font-semibold border border-dashed border-slate-200 dark:border-slate-700">
-                  Click the button above to load reports. Warning: Endpoint is
-                  extremely slow on larger doctor count tables!
+                  Click the button above to load reports.
                 </div>
               ) : (
                 <div className="space-y-6">
                   {/* Reporting details benchmark */}
-                  <div className="flex items-center gap-3 p-3 bg-amber-500/10 text-slate-700 dark:text-slate-300 text-xs rounded-lg border border-amber-500/20 leading-5">
-                    <Clock className="h-5 w-5 text-amber-500 shrink-0" />
+                  <div className="flex items-center gap-3 p-3 bg-teal-500/10 text-slate-700 dark:text-slate-300 text-xs rounded-lg border border-teal-500/20 leading-5">
+                    <Clock className="h-5 w-5 text-teal-600 shrink-0" />
                     <div>
-                      <strong>Performance Diagnostic:</strong> API execution
+                      <strong>Performance Report:</strong> API execution
                       resolved in{" "}
-                      <span className="font-bold text-amber-500">
+                      <span className="font-bold text-teal-600">
                         {adminReportData.timeTakenMs} ms
                       </span>
-                      . Sequential nested database calls loops reduce
-                      throughput. Optimization using Promise.all or single join
-                      aggregate is required.
+                      . Reporting metrics generated using optimized aggregation queries.
                     </div>
                   </div>
 
@@ -1284,7 +1277,7 @@ export default function Dashboard() {
         )}
 
         {/* ==============================================================
-            TAB: PHYSICIAN REGISTRY (ADMIN ROLE - SQL INJECTION VULNERABILITY)
+            TAB: PHYSICIAN REGISTRY (ADMIN ROLE)
             ============================================================== */}
         {activeTab === "physicians" && (
           <div className="glass p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md space-y-6">
@@ -1294,8 +1287,7 @@ export default function Dashboard() {
                 Staff Physicians Registry Lookup
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
-                Database lookup for credentials. Uses a raw SQL interpolation
-                backend query.
+                Search physicians by name or credentials. Secure search enabled.
               </p>
             </div>
 
@@ -1308,7 +1300,7 @@ export default function Dashboard() {
                   type="text"
                   value={adminSearchQuery}
                   onChange={(e) => setAdminSearchQuery(e.target.value)}
-                  placeholder="Enter physician name search criteria (raw syntax supported)..."
+                  placeholder="Enter physician name search criteria..."
                   className="block w-full pl-9 pr-3 py-2 border border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
                 />
               </div>
@@ -1317,21 +1309,14 @@ export default function Dashboard() {
                 onClick={searchPhysiciansAdmin}
                 className="glow-btn px-5 py-2 bg-slate-900 text-white dark:bg-teal-500 dark:text-slate-950 font-bold text-xs rounded-lg hover:bg-slate-800 dark:hover:bg-teal-400 transition-colors"
               >
-                Execute SQL Query
+                Search Registry
               </button>
             </div>
 
-            <div className="p-3 bg-rose-500/10 text-rose-500 text-xs rounded-lg border border-rose-500/20 font-semibold leading-5 flex gap-3">
-              <ShieldAlert className="h-5 w-5 shrink-0" />
+            <div className="p-3 bg-teal-500/10 text-teal-600 dark:text-teal-400 text-xs rounded-lg border border-teal-500/20 font-semibold leading-5 flex gap-3">
+              <CheckCircle className="h-5 w-5 shrink-0" />
               <div>
-                <strong>SQL Vulnerability alert:</strong> This search executes
-                raw interpolation:
-                <code className="block bg-black/10 dark:bg-black/30 p-1.5 rounded mt-1 font-mono">
-                  SELECT * FROM &quot;Doctor&quot; WHERE name ILIKE
-                  &apos;%&#123;query&#125;%&apos;
-                </code>
-                Can be audited by inputting standard SQL injection strings to
-                leak full user login lists.
+                <strong>Secure Search Enabled:</strong> Physician lookup uses validated query filters with case-insensitive matching and protected backend access controls.
               </div>
             </div>
 

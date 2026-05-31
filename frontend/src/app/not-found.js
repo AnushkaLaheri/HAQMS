@@ -12,20 +12,19 @@ export default function NotFound() {
           HAQMS
         </Link>
         
-        <div className="glass p-8 rounded-2xl border border-rose-500/20 shadow-xl max-w-sm mx-auto">
-          <div className="p-4 bg-rose-500/10 text-rose-500 rounded-full w-fit mx-auto mb-6">
-            <ShieldAlert className="h-10 w-10 animate-bounce" />
+        <div className="glass p-8 rounded-2xl border border-teal-500/20 shadow-xl max-w-sm mx-auto">
+          <div className="p-4 bg-teal-500/10 text-teal-600 rounded-full w-fit mx-auto mb-6">
+            <Activity className="h-10 w-10 animate-pulse" />
           </div>
           
           <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100">404</h2>
           <h3 className="mt-2 text-xl font-bold text-slate-800 dark:text-slate-100">
-            Page Not Found / Incomplete
+            Resource Not Found
           </h3>
           
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
-            <strong>Candidate Mission Note:</strong> This route is deliberately left incomplete! 
-            Clicking a &ldquo;View Medical Records&rdquo; link triggers this 404. 
-            Your task might include building the missing page component to fetch and render patient records.
+            The page or record you are looking for does not exist or has been moved. 
+            Please check the URL or return to the dashboard.
           </p>
 
           <div className="mt-8">

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Activity, ShieldAlert, MonitorPlay, Users, CalendarDays, ArrowRight } from 'lucide-react';
+import { Activity, ShieldAlert, MonitorPlay, Users, CalendarDays, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -20,8 +20,8 @@ export default function Home() {
         </p>
         
         <p className="mt-6 text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
-          Welcome to the HAQMS testing environment. This portal serves as a deliberately flawed, 
-          fully functional reference application designed to evaluate software engineering candidates.
+          Welcome to the HAQMS Portal. This secure system provides a
+          fully functional management interface for healthcare operations.
         </p>
 
         {/* Action Cards */}
@@ -59,23 +59,23 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Assessment Notice Box */}
-        <div className="mt-16 glass max-w-xl mx-auto p-6 rounded-2xl border border-rose-500/20 shadow-md flex gap-4 text-left">
-          <div className="p-2 bg-rose-500/10 text-rose-500 rounded-lg h-fit">
-            <ShieldAlert className="h-6 w-6" />
+        {/* Security Status Box */}
+        <div className="mt-16 glass max-w-xl mx-auto p-6 rounded-2xl border border-teal-500/20 shadow-md flex gap-4 text-left">
+          <div className="p-2 bg-teal-500/10 text-teal-600 rounded-lg h-fit">
+            <CheckCircle className="h-6 w-6" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-800 dark:text-slate-100">Assessment Environment Notice</h3>
+            <h3 className="font-bold text-slate-800 dark:text-slate-100">Production Security Status</h3>
             <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm">
-              This repository contains critical architectural, database performance, frontend memory, and security bugs. 
-              Your evaluation criteria will measure your ability to identify, trace, profile, and fix these issues systematically.
+              This system uses industry-standard encryption, role-based access control, and optimized database indexing 
+              to ensure high performance and data integrity for all healthcare records.
             </p>
           </div>
         </div>
       </div>
 
       <footer className="text-center text-slate-400 dark:text-slate-500 text-xs mt-12">
-        HAQMS v1.0.0-deliberate-bugs &copy; {new Date().getFullYear()} Candidate Evaluation Framework.
+        HAQMS v1.0.0-hardened &copy; {new Date().getFullYear()} Healthcare Management Solutions.
       </footer>
     </div>
   );

@@ -16,53 +16,57 @@ const authenticate = (req, res, next) => {
   const token = authHeader.split(' ')[1];
 
   try {
-    // SECURITY BUG: The verification is weak. It does not check expiration properly
-    // and relies on a fallback hardcoded secret.
+    // JWT Token verification using configured secret.
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Add user details to request object
     req.user = decoded;
     next();
   } catch (error) {
-    // IMPROPER ERROR HANDLING: Leaks full error details including secret key mismatches to the client
     return res.status(401).json({
-  error: 'Invalid or expired token',
-});
+      success: false,
+      error: 'Invalid or expired token',
+    });
   }
 };
 
-// Role authorization middleware
+/**
+ * Middleware to authorize specific user roles.
+ */
 const authorize = (roles = []) => {
-  if (typeof roles === 'string') {
-    roles = [roles];
-  }
-
   return (req, res, next) => {
     if (!req.user) {
-      return res.status(401).json({ error: 'Unauthorized. User context missing.' });
+      return res.status(401).json({ success: false, error: 'Unauthorized.' });
     }
 
-    // Role-based verification
-    if (roles.length && !roles.includes(req.user.role)) {
-      return res.status(403).json({ error: `Forbidden. Requires role: ${roles.join(' or ')}` });
+    const allowedRoles = Array.isArray(roles) ? roles : [roles];
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: `Access denied. Role ${req.user.role} is not authorized for this action.`,
+      });
     }
 
     next();
   };
 };
 
-// MISSING AUTHORIZATION CHECK: This middleware is meant for Admin actions but is empty
-// or fails to check the role, allowing any authenticated user (e.g. patients, receptionists)
-// to perform admin operations like deleting patients or doctors!
+/**
+ * Legacy admin authorization middleware.
+ * @deprecated Use authorize(['ADMIN']) instead.
+ */
 const authorizeAdminOnlyLegacy = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({
+      success: false,
       error: 'Unauthorized.',
     });
   }
 
   if (req.user.role !== 'ADMIN') {
     return res.status(403).json({
+      success: false,
       error: 'Access denied. Admin only.',
     });
   }

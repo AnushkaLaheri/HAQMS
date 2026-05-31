@@ -1,7 +1,7 @@
 {
   "name": "haqms-backend",
   "version": "1.0.0",
-  "description": "Deliberately imperfect backend for Hospital Appointment and Queue Management System",
+  "description": "Hardened backend service for Hospital Appointment and Queue Management System",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

@@ -15,9 +15,10 @@ Build the production bundle:
 npm run build
 ```
 
-## 🔍 Candidate Scope
-You will need to analyze and optimize files inside `src/`:
-- **Memory Leak**: Locate the polling issue in `src/app/queue/page.js`.
-- **Render Performance**: Profile the input searches in `src/app/dashboard/page.js`.
-- **Unsafe Object Property Reads**: Correct the null-reference clinical history rendering crash in `src/app/dashboard/page.js`.
-- **Incomplete Feature**: Implement the missing legacy reports page at `src/app/patients/[id]/history-records/page.js`.
+## 🔍 Technical Architecture
+The client codebase is organized into several key modules:
+- **State Management**: Uses React Context API for authentication and global session state.
+- **Routing**: Implements Next.js App Router with navigation guards.
+- **Real-time Sync**: Optimized polling logic for public displays.
+- **Performance**: Strategic use of `useEffect` and `useMemo` to minimize re-renders.
+- **Data Safety**: Hardened component logic with optional chaining and fallback rendering.
