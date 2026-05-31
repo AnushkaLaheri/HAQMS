@@ -1207,7 +1207,7 @@ export default function Dashboard() {
                         Total Physicians
                       </span>
                       <h4 className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1">
-                        {adminReportData.data.length}
+                        {adminReportData?.report?.length || 0}
                       </h4>
                     </div>
                     <div className="p-4 bg-slate-500/5 border border-slate-200 dark:border-slate-800 rounded-xl">
@@ -1215,7 +1215,7 @@ export default function Dashboard() {
                         Sum appointments
                       </span>
                       <h4 className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1">
-                        {adminReportData.data.reduce(
+                        {adminReportData?.report?.reduce(
                           (sum, item) => sum + item.totalAppointments,
                           0,
                         )}
@@ -1227,7 +1227,7 @@ export default function Dashboard() {
                       </span>
                       <h4 className="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1">
                         $
-                        {adminReportData.data.reduce(
+                        {adminReportData?.report?.reduce(
                           (sum, item) => sum + item.revenue,
                           0,
                         )}
@@ -1248,7 +1248,7 @@ export default function Dashboard() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                        {adminReportData.data.map((item) => (
+                        {adminReportData?.report?.map((item) => (
                           <tr
                             key={item.id}
                             className="hover:bg-slate-500/5 transition-colors"
